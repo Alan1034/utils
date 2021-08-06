@@ -228,3 +228,49 @@ export const formatNumberToString=(num, degree = 2)=> {
 	const power = Math.pow(10, degree);
 	return Math.round(value * power) / power;
 }
+
+
+/**
+ * @description: 删除表单/数组中的某一项，并把剩余的项往前一位（key值需要带$index）
+ * @param {*} scope 表格的scope,格式为{$index:n},$index为Number类型
+ * @param {*} usedList 表格的tableList
+ * @param {*} key 数据表单form中的唯一标识，一般在key中截取唯一的一段
+ * @param {*} form 表单嵌套表格的表单
+ * @return {*}
+ */
+ export function rowDelete(scope, usedList, key, form) {
+  const { $index } = scope;
+  const reg = new RegExp(`(?=.*${key})(?=.*${$index})`);
+  const list = Object.keys(form).filter((item) => reg.test(item));
+  // console.log(list)
+  list.forEach((item) => {
+    delete form[item]; //删除选中的行表单内的数据
+  });
+  const restReg = new RegExp(`(?=.*${key})`);
+  // const count = {};
+  const restList = Object.keys(form).filter((item) => {
+    // const datalist = item.split("_");
+    // if (datalist[2]) {
+    //   //计数
+    //   count[datalist[2]] = count[datalist[2]] ? count[datalist[2]] + 1 : 1;
+    // }
+    return restReg.test(item);
+  });
+  // console.log(restList)
+  restList.forEach((item) => {
+    const datalist = item.split("_");
+    let num = datalist[2];
+    if (Number(num) > Number($index)) { //序数大于被删除的项目序数都统一-1
+      num -= 1;
+    }
+    const newKey = [datalist[0], datalist[1], num].join("_");
+    form[newKey] = form[item];
+    if (Number(datalist[2]) > Number($index)) { //删掉排序大于删除行的冗余form项
+      delete form[item];
+    }
+  });
+  if (list.length > 0) {
+    usedList.splice($index, 1);// 同时删除列表对应的行
+  }
+  // console.log(form)
+}
