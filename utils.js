@@ -274,3 +274,35 @@ export const formatNumberToString=(num, degree = 2)=> {
   }
   // console.log(form)
 }
+
+/**
+ * @description: 用于可自增表格提交时对表格内的数据进行统一处理，表单的key值格式为[表单唯一key]_[表格列key]_[表格行index]，例：`fabricColorListB_fabricColorCode_${$index}`
+ * @param {*} params 提交的JSON
+ * @param {*} key 数据表单form中数组的唯一标识，一般在key中截取唯一的一段
+ * @param {*} paramsKey params中需要被赋值的字段
+ * @return {*}
+ */
+ export function tableParamsHandle(params = {}, key, paramsKey) {
+  const count = {} //计数
+  // 筛选出数据
+  const filterList = Object.keys(params).filter((item) => {
+    const reg = new RegExp(`${key}`)
+    const datalist = item.split("_");
+    if (datalist[2] && reg.test(item) && item !== key) {
+      //计算每行的元素个数
+      count[datalist[2]] = count[datalist[2]] ? count[datalist[2]] + 1 : 1;
+    }
+    return reg.test(item) && item !== key; //防止重名的情况，只过滤出表格的数据
+  });
+  params[paramsKey] = []
+  //先存一些空的字段，方便后面赋值
+  for (let i = 0; i < Object.keys(count).length; i++) {
+    params[paramsKey].push({});
+  }
+  filterList.forEach((element) => {
+    //赋值
+    const datalist = element.split("_");
+    params[paramsKey][Number(datalist[2])][datalist[1]] =
+      params[element];
+  });
+}
