@@ -306,3 +306,21 @@ export const formatNumberToString=(num, degree = 2)=> {
       params[element];
   });
 }
+
+/**
+ * @description: 用于生成表单KEY值
+ * @param {*} incomeList 用于回显数据的数组
+ * @param {*} listKey 自定义唯一值KEY
+ * @param {*} form 传入一个表单对象
+ * @return {*}
+ */
+ export function formSetter(incomeList = [], listKey, form = {}) {
+  if (!Array.isArray(incomeList)) {
+    return
+  }
+  incomeList.map((item, index) => {
+    for (const [key, value] of Object.entries(item)) {
+      form[`${listKey}_${key}_${index}`] = value;
+    }
+  });
+}
