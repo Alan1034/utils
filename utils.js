@@ -199,7 +199,7 @@ const dealData = (fileBase64, getdata, type) => {
 // }
 
 // 千分位数字
-const formatNum=(num)=> {
+const formatNum = (num) => {
   const reg = /\d{1,3}(?=(\d{3})+$)/g;
   return (`${num}`).replace(reg, '$&,');
 }
@@ -221,12 +221,12 @@ export default {
 };
 
 // 简单的number 字符格式化输出
-export const formatNumberToString=(num, degree = 2)=> {
-	let value = Number(num);
-	value = isNaN(value) ? 0 : value;
-	if (degree === 0) return Math.round(value);
-	const power = Math.pow(10, degree);
-	return Math.round(value * power) / power;
+export const formatNumberToString = (num, degree = 2) => {
+  let value = Number(num);
+  value = isNaN(value) ? 0 : value;
+  if (degree === 0) return Math.round(value);
+  const power = Math.pow(10, degree);
+  return Math.round(value * power) / power;
 }
 
 
@@ -238,7 +238,7 @@ export const formatNumberToString=(num, degree = 2)=> {
  * @param {*} form 表单嵌套表格的表单
  * @return {*}
  */
- export function rowDelete(scope, usedList, key, form) {
+export function rowDelete(scope, usedList, key, form) {
   const { $index } = scope;
   const reg = new RegExp(`(?=.*${key})(?=.*${$index})`);
   const list = Object.keys(form).filter((item) => reg.test(item));
@@ -282,7 +282,7 @@ export const formatNumberToString=(num, degree = 2)=> {
  * @param {*} paramsKey params中需要被赋值的字段
  * @return {*}
  */
- export function tableParamsHandle(params = {}, key, paramsKey) {
+export function tableParamsHandle(params = {}, key, paramsKey) {
   const count = {} //计数
   // 筛选出数据
   const filterList = Object.keys(params).filter((item) => {
@@ -314,7 +314,7 @@ export const formatNumberToString=(num, degree = 2)=> {
  * @param {*} form 传入一个表单对象
  * @return {*}
  */
- export function formSetter(incomeList = [], listKey, form = {}) {
+export function formSetter(incomeList = [], listKey, form = {}) {
   if (!Array.isArray(incomeList)) {
     return
   }
@@ -323,4 +323,54 @@ export const formatNumberToString=(num, degree = 2)=> {
       form[`${listKey}_${key}_${index}`] = value;
     }
   });
+}
+
+
+/**
+ * @description: 用于替换表单内传入KEY值有关的数据
+ * @param {*} form 对象/表单
+ * @param {*} key 数据表单form中的唯一标识，一般在key中截取唯一的一段
+ * @param {*} value 用于替换的新数据
+ * @return {*}
+ */
+ export function formUpdate(form, key, value) {
+  const reg = new RegExp(`(?=.*${key})`);
+  const list = Object.keys(form).filter((item) => reg.test(item));
+  for (const item of list) {
+    form[item] = value
+  }
+  console.log(form)
+}
+
+
+/**
+ * @description: 快速排序
+ * @param {*}
+ * @return {*}
+ */
+export const quickSort = (array) => {
+  const sort = (arr, left = 0, right = arr.length - 1) => {
+    if (left >= right) {//如果左边的索引大于等于右边的索引说明整理完毕
+      return
+    }
+    let i = left
+    let j = right
+    const baseVal = arr[j] // 取无序数组最后一个数为基准值
+    while (i < j) {//把所有比基准值小的数放在左边大的数放在右边
+      while (i < j && arr[i] <= baseVal) { //找到一个比基准值大的数交换
+        i++
+      }
+      arr[j] = arr[i] // 将较大的值放在右边如果没有比基准值大的数就是将自己赋值给自己（i 等于 j）
+      while (j > i && arr[j] >= baseVal) { //找到一个比基准值小的数交换
+        j--
+      }
+      arr[i] = arr[j] // 将较小的值放在左边如果没有找到比基准值小的数就是将自己赋值给自己（i 等于 j）
+    }
+    arr[j] = baseVal // 将基准值放至中央位置完成一次循环（这时候 j 等于 i ）
+    sort(arr, left, j - 1) // 将左边的无序数组重复上面的操作
+    sort(arr, j + 1, right) // 将右边的无序数组重复上面的操作
+  }
+  const newArr = array.concat() // 为了保证这个函数是纯函数拷贝一次数组
+  sort(newArr)
+  return newArr
 }
